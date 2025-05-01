@@ -1,6 +1,7 @@
 import { fetchBooks } from "../api/booksApi";
 import { createBookCard } from "../components/BookCard";
 import { navigateTo } from "../main";
+import { Book } from "../modal/Book";
 
 export function BookCollection(): string {
   return `
@@ -22,7 +23,7 @@ export function BookCollection(): string {
 
 export async function initBookCollection(): Promise<void> {
   try {
-    const books = await fetchBooks();
+    const result = await fetchBooks();
     const bookList = document.getElementById("bookList");
 
     if (!bookList) {
@@ -30,8 +31,9 @@ export async function initBookCollection(): Promise<void> {
     }
 
     bookList.innerHTML = "";
-
-    books.books.forEach((book: any, index: number) => {
+    const books = result.books;
+    console.log(books);
+    books.forEach((book: Book, index: number) => {
       const card = createBookCard(book, index);
 
       card.querySelector(".view-details")?.addEventListener("click", (e) => {

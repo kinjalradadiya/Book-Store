@@ -1,5 +1,6 @@
-import { fetchBookById } from "../api/booksApi";
+import { fetchBookById, purchaseBook } from "../api/booksApi";
 import { Loading } from "../components/Loading";
+import { Book } from "../modal/Book";
 
 export async function renderBookPage(id: number): Promise<string> {
   let content = `
@@ -13,7 +14,9 @@ export async function renderBookPage(id: number): Promise<string> {
     const book = result.book;
 
     content = `
-    <div class="flex flex-col justify-center items-center min-h-screen">
+    <div class="flex flex-col justify-center items-center min-h-screen"  data-book-id="${
+      book.id
+    }">
    
          <div class="max-w-4xl mx-auto p-6 grid md:grid-cols-2 gap-8 items-start">
       <div class="relative w-64 h-80">
@@ -44,16 +47,13 @@ export async function renderBookPage(id: number): Promise<string> {
         <p class="text-sm text-gray-500">ISBN: ${book.isbn}</p>
 
         <p class="text-2xl text-green-600 font-extrabold">$${book.price}</p>
-        <p class="text-gray-700 leading-relaxed">
-          ${book.description || "No description available."}
-        </p>
-        <p class="${
+        <p class="stock-display ${
           book.availableStock <= 0
             ? "text-red-600 font-semibold"
             : "text-green-600 font-semibold"
         }">
           ${
-            book.availableStock <= 0
+            book.availableStock === 0
               ? "Out of Stock"
               : `In Stock: ${book.availableStock}`
           }
@@ -111,22 +111,13 @@ export function setupPurchaseButton() {
       const bookId = purchaseBtn.dataset.bookId;
       if (!bookId) throw new Error("No book ID found");
 
-      await purchaseBook(Number(bookId));
+      const result = await purchaseBook(Number(bookId));
 
-      const successMessage = document.getElementById("purchaseSuccessMessage");
-      if (successMessage) {
-        successMessage.classList.remove("hidden");
-        successMessage.innerHTML = `
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-              <div class="flex items-center">
-                <span>Congratulations! You've successfully purchased this book!</span>
-              </div>
-            </div>
-          `;
-      }
-      purchaseBtn.classList.add("hidden");
+      purchaseBtn.textContent = "Purchased!";
+      purchaseBtn.classList.remove("cursor-pointer");
+      purchaseBtn.classList.add("cursor-no-drop");
+      updateBookCard(result.book, result.message, purchaseBtn);
     } catch (error) {
-      // Handle errors
       console.error("Purchase error:", error);
       purchaseBtn.textContent = "Buy Now";
       purchaseBtn.disabled = false;
@@ -140,23 +131,44 @@ export function setupPurchaseButton() {
   });
 }
 
-async function purchaseBook(id: number): Promise<{ success: boolean }> {
-  try {
-    const response = await fetch(`http://localhost:8000/books/${id}/purchase`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Purchase failed");
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
+function updateBookCard(
+  book: Book,
+  message: string,
+  purchaseBtn: HTMLButtonElement
+) {
+  if (book.availableStock === 0) {
+    purchaseBtn.classList.remove("cursor-pointer");
+    purchaseBtn.classList.add("cursor-no-drop");
   }
+  purchaseBtn.textContent = "Purchased!";
+
+  const successMessage = document.getElementById("purchaseSuccessMessage");
+  if (successMessage) {
+    successMessage.classList.remove("hidden");
+    successMessage.innerHTML = `
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+              <div class="flex items-center">
+                <span>Congratulations! ${message}</span>
+              </div>
+            </div>
+          `;
+  }
+
+  const stockElement = document.querySelector(
+    `[data-book-id="${book.id}"] .stock-display`
+  );
+  if (!stockElement) return;
+
+  // Update class list
+  stockElement.className = `${
+    book.availableStock === 0
+      ? "text-red-600 font-semibold"
+      : "text-green-600 font-semibold"
+  } stock-display`; // Keep any additional classes
+
+  // Update text content
+  stockElement.textContent =
+    book.availableStock === 0
+      ? "Out of Stock"
+      : `In Stock: ${book.availableStock}`;
 }
