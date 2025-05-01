@@ -32,7 +32,6 @@ export async function initBookCollection(): Promise<void> {
 
     bookList.innerHTML = "";
     const books = result.books;
-    console.log(books);
     books.forEach((book: Book, index: number) => {
       const card = createBookCard(book, index);
 

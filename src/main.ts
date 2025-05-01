@@ -9,7 +9,7 @@ import { Loading } from "./components/Loading";
 type Route = {
   path: string;
   title: string;
-  render: (params?: Record<string, unknown>) => Promise<string>;
+  render: (path?: string) => Promise<string>;
   match?: (path: string) => boolean;
   params?: (path: string) => Record<string, unknown>;
 };
@@ -45,6 +45,7 @@ const routes: Route[] = [
     match: (path) => path.startsWith("/books/"),
     params: (path) => ({ id: Number(path.split("/books/")[1]) }),
     render: async (path) => {
+      if (!path) throw new Error("Path is required for this route.");
       const { id } = routes[1].params!(path);
       return renderBookPage(id as number);
     },
