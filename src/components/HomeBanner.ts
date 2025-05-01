@@ -1,9 +1,11 @@
+import bannerimage from "../assets/banner-image.png";
+
 export function HomeBanner(): string {
   return `
       <div class="home-banner w-full h-[60vh] flex flex-col-reverse md:flex-row items-center justify-between mt-[60px]">
         <div
           class="relative w-full h-full flex items-center justify-center bg-cover bg-center"
-          style="background-image: url('./public/banner-image.png')"
+          style="background-image: url('${bannerimage}')"
         >
           <div
             class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70 z-0"
