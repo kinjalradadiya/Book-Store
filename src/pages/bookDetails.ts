@@ -14,7 +14,7 @@ export async function renderBookPage(id: number): Promise<string> {
     const book = result.book;
 
     content = `
-    <div class="flex flex-col justify-center items-center min-h-screen"  data-book-id="${
+    <div class="flex flex-col justify-center items-center mt-[100px]"  data-book-id="${
       book.id
     }">
    
