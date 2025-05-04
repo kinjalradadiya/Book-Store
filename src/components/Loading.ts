@@ -5,3 +5,22 @@ export function Loading(): string {
       </div>
     `;
 }
+
+let currentLoadingTimeout: number;
+
+export function showLoading(delay: number = 300): void {
+  currentLoadingTimeout = window.setTimeout(() => {
+    const loadingElement = document.createElement("div");
+    loadingElement.id = "global-loading";
+    loadingElement.innerHTML = Loading();
+    document.body.appendChild(loadingElement);
+  }, delay);
+}
+
+export function hideLoading(): void {
+  clearTimeout(currentLoadingTimeout);
+  const loadingElement = document.getElementById("global-loading");
+  if (loadingElement) {
+    loadingElement.remove();
+  }
+}

@@ -159,14 +159,12 @@ function updateBookCard(
   );
   if (!stockElement) return;
 
-  // Update class list
   stockElement.className = `${
     book.availableStock === 0
       ? "text-red-600 font-semibold"
       : "text-green-600 font-semibold"
-  } stock-display`; // Keep any additional classes
+  } stock-display`;
 
-  // Update text content
   stockElement.textContent =
     book.availableStock === 0
       ? "Out of Stock"

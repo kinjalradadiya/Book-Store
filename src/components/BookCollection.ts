@@ -2,6 +2,7 @@ import { fetchBooks } from "../api/booksApi";
 import { createBookCard } from "../components/BookCard";
 import { navigateTo } from "../main";
 import { Book } from "../modal/Book";
+import { hideLoading, showLoading } from "./Loading";
 
 export function BookCollection(): string {
   return `
@@ -22,6 +23,7 @@ export function BookCollection(): string {
 }
 
 export async function initBookCollection(): Promise<void> {
+  showLoading();
   try {
     const result = await fetchBooks();
     const bookList = document.getElementById("bookList");
@@ -53,5 +55,7 @@ export async function initBookCollection(): Promise<void> {
         </div>
       `;
     }
+  } finally {
+    hideLoading();
   }
 }

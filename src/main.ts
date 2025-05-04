@@ -4,7 +4,7 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { renderHomePage } from "./pages/home";
 import { renderBookPage } from "./pages/bookDetails";
-import { Loading } from "./components/Loading";
+import { hideLoading, showLoading } from "./components/Loading";
 
 type Route = {
   path: string;
@@ -13,25 +13,6 @@ type Route = {
   match?: (path: string) => boolean;
   params?: (path: string) => Record<string, unknown>;
 };
-
-let currentLoadingTimeout: number;
-
-function showLoading(delay: number = 300): void {
-  currentLoadingTimeout = window.setTimeout(() => {
-    const loadingElement = document.createElement("div");
-    loadingElement.id = "global-loading";
-    loadingElement.innerHTML = Loading();
-    document.body.appendChild(loadingElement);
-  }, delay);
-}
-
-function hideLoading(): void {
-  clearTimeout(currentLoadingTimeout);
-  const loadingElement = document.getElementById("global-loading");
-  if (loadingElement) {
-    loadingElement.remove();
-  }
-}
 
 const routes: Route[] = [
   {
