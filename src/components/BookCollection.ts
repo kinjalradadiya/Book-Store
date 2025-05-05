@@ -22,18 +22,24 @@ export function BookCollection(): string {
   `;
 }
 
+// Initializes and renders the book collection on the page
 export async function initBookCollection(): Promise<void> {
+  // Show loading indicator while fetching data
   showLoading();
   try {
+    // Fetch books from API
     const result = await fetchBooks();
     const bookList = document.getElementById("bookList");
 
+    // Validate DOM element exists
     if (!bookList) {
       throw new Error("Book list element not found");
     }
-
+    // Clear existing content
     bookList.innerHTML = "";
     const books = result.books;
+
+    // Process each book and create cards
     books.forEach((book: Book, index: number) => {
       const card = createBookCard(book, index);
 
@@ -56,6 +62,7 @@ export async function initBookCollection(): Promise<void> {
       `;
     }
   } finally {
+    // Always remove loading indicator regardless of success/failure
     hideLoading();
   }
 }

@@ -98,7 +98,7 @@ export async function renderBookPage(id: number): Promise<string> {
 
   return content;
 }
-
+// Sets up the purchase button with click event handler
 export function setupPurchaseButton() {
   const purchaseBtn = document.getElementById("purchaseBtn");
   if (!purchaseBtn || !(purchaseBtn instanceof HTMLButtonElement)) return;
@@ -108,20 +108,21 @@ export function setupPurchaseButton() {
       purchaseBtn.disabled = true;
       purchaseBtn.textContent = "Processing...";
 
+      // Get book ID from data attribute
       const bookId = purchaseBtn.dataset.bookId;
       if (!bookId) throw new Error("No book ID found");
 
+      // Call purchase API
       const result = await purchaseBook(Number(bookId));
 
-      purchaseBtn.textContent = "Purchased!";
-      purchaseBtn.classList.remove("cursor-pointer");
-      purchaseBtn.classList.add("cursor-no-drop");
+      // Update book card with new information
       updateBookCard(result.book, result.message, purchaseBtn);
     } catch (error) {
       console.error("Purchase error:", error);
+      // Reset button state on error
       purchaseBtn.textContent = "Buy Now";
       purchaseBtn.disabled = false;
-
+      // Show error message
       alert(
         error instanceof Error
           ? error.message
@@ -131,17 +132,18 @@ export function setupPurchaseButton() {
   });
 }
 
+// Updates the book card UI after successful purchase
 function updateBookCard(
   book: Book,
   message: string,
   purchaseBtn: HTMLButtonElement
 ) {
-  if (book.availableStock === 0) {
-    purchaseBtn.classList.remove("cursor-pointer");
-    purchaseBtn.classList.add("cursor-no-drop");
-  }
+  // Update button state
+  purchaseBtn.classList.remove("cursor-pointer");
+  purchaseBtn.classList.add("cursor-no-drop");
   purchaseBtn.textContent = "Purchased!";
 
+  // Show success message
   const successMessage = document.getElementById("purchaseSuccessMessage");
   if (successMessage) {
     successMessage.classList.remove("hidden");
@@ -154,6 +156,7 @@ function updateBookCard(
           `;
   }
 
+  // Update stock display
   const stockElement = document.querySelector(
     `[data-book-id="${book.id}"] .stock-display`
   );
